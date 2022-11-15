@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import axios from "axios";
 
 import {
   addUserToLocalStorage,
   getUserFromLocalStorage,
+  removeUserFromLocalStorage,
 } from "../../utils/localStorage";
+import axiosClient from "../../services/api/axiosClient";
 
 const initialState = {
   isLoading: false,
+  isSidebarOpen: false,
   user: getUserFromLocalStorage(),
 };
 
@@ -16,10 +18,7 @@ export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (user, thunkAPI) => {
     try {
-      const resp = await axios.post(
-        "https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/register",
-        user
-      );
+      const resp = await axiosClient.post("/auth/register", user);
       return resp.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
@@ -31,10 +30,7 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (user, thunkAPI) => {
     try {
-      const resp = await axios.post(
-        "https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/login",
-        user
-      );
+      const resp = await axiosClient.post("/auth/login", user);
       return resp.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data.msg);
@@ -45,6 +41,16 @@ export const loginUser = createAsyncThunk(
 const userSlice = createSlice({
   name: "user",
   initialState,
+  reducers: {
+    toggleSidebar: (state) => {
+      state.isSidebarOpen = !state.isSidebarOpen;
+    },
+    logoutUser: (state) => {
+      state.user = null;
+      state.isSidebarOpen = false;
+      removeUserFromLocalStorage();
+    },
+  },
   extraReducers: {
     [registerUser.pending]: (state) => {
       state.isLoading = true;
@@ -53,7 +59,7 @@ const userSlice = createSlice({
       const { user } = payload;
       state.isLoading = false;
       state.user = user;
-      addUserToLocalStorage();
+      addUserToLocalStorage(user);
       toast.success(`Hello there ${user.name}`);
     },
     [registerUser.rejected]: (state, { payload }) => {
@@ -67,7 +73,7 @@ const userSlice = createSlice({
       const { user } = payload;
       state.isLoading = false;
       state.user = user;
-      addUserToLocalStorage();
+      addUserToLocalStorage(user);
       toast.success(`Welcome back ${user.name}`);
     },
     [loginUser.rejected]: (state, { payload }) => {
@@ -77,4 +83,5 @@ const userSlice = createSlice({
   },
 });
 
+export const { toggleSidebar, logoutUser } = userSlice.actions;
 export default userSlice.reducer;
