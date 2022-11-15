@@ -31,7 +31,7 @@ function SmallSidebar() {
           <header>
             <Logo />
           </header>
-          <Navlink toggleSidebar={toggleSidebar} />
+          <Navlink toggleSidebar={toggle} />
         </div>
       </div>
     </Wrapper>
