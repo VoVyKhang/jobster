@@ -27,14 +27,7 @@ export const getAllJobs = createAsyncThunk(
   async (_, thunkAPI) => {
     let url = "/jobs";
     try {
-      const resp = await axios.get(
-        `https://jobify-prod.herokuapp.com/api/v1/toolkit${url}`,
-        {
-          headers: {
-            authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
-          },
-        }
-      );
+      const resp = await axiosClient.get(url);
       return resp.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("There was an error");

@@ -3,8 +3,7 @@ import { toast } from "react-toastify";
 import { getUserFromLocalStorage } from "../../utils/localStorage";
 import axios from "axios";
 
-import { logoutUser } from "../../features/user/userSlice";
-import { showLoading, hideLoading, getAllJobs } from "../allJobs/allJobsSlice";
+import { createJobThunk, editJobThunk, deleteJobThunk } from "./jobThunk";
 
 const initialState = {
   isLoading: false,
@@ -19,73 +18,11 @@ const initialState = {
   editJobId: "",
 };
 
-export const createJob = createAsyncThunk(
-  "job/createJob",
-  async (job, thunkAPI) => {
-    try {
-      const resp = await axios.post(
-        "https://jobify-prod.herokuapp.com/api/v1/toolkit/jobs",
-        job,
-        {
-          headers: {
-            authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
-          },
-        }
-      );
-      thunkAPI.dispatch(clearValues());
-      return resp.data;
-    } catch (error) {
-      if (error.response.state === 401) {
-        thunkAPI.dispatch(logoutUser());
-        return thunkAPI.rejectWithValue("Unauthorized! Logging out...");
-      }
-      return thunkAPI.rejectWithValue(error.response.data.msg);
-    }
-  }
-);
+export const createJob = createAsyncThunk("job/createJob", createJobThunk);
 
-export const deleteJob = createAsyncThunk(
-  "job/deleteJob",
-  async (jobId, thunkAPI) => {
-    thunkAPI.showLoading();
-    try {
-      const resp = await axios.delete(
-        `https://jobify-prod.herokuapp.com/api/v1/toolkit/jobs/${jobId}`,
-        {
-          headers: {
-            authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
-          },
-        }
-      );
-      thunkAPI.dispatch(getAllJobs());
-      return resp.data.msg;
-    } catch (error) {
-      thunkAPI.dispatch(hideLoading());
-      return thunkAPI.rejectWithValue(error.response.data.msg);
-    }
-  }
-);
+export const deleteJob = createAsyncThunk("job/deleteJob", deleteJobThunk);
 
-export const editJobId = createAsyncThunk(
-  "job/editJob",
-  async ({ jobId, job }, thunkAPI) => {
-    try {
-      const resp = await axios.patch(
-        `https://jobify-prod.herokuapp.com/api/v1/toolkit/jobs/${jobId}`,
-        job,
-        {
-          headers: {
-            authorization: `Bearer ${thunkAPI.getState().user.user.token}`,
-          },
-        }
-      );
-      thunkAPI.dispatch(clearValues());
-      return resp.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data.msg);
-    }
-  }
-);
+export const editJobId = createAsyncThunk("job/editJob", editJobThunk);
 
 const jobSlice = createSlice({
   name: "job",
