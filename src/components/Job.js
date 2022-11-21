@@ -6,6 +6,7 @@ import moment from "moment";
 
 import Wrapper from "../assets/wrappers/Job";
 import { JobInfo } from "../components";
+import { deleteJob, setEditJob } from "../features/job/jobSlice";
 
 function Job({
   _id,
@@ -39,14 +40,25 @@ function Job({
             <Link
               to="/add-job"
               className="btn edit-btn"
-              onClick={() => console.log("edit-job")}
+              onClick={() =>
+                dispatch(
+                  setEditJob({
+                    editJobId: _id,
+                    position,
+                    company,
+                    jobLocation,
+                    jobType,
+                    status,
+                  })
+                )
+              }
             >
               Edit
             </Link>
             <button
               type="button"
               className="btn delete-btn"
-              onClick={() => console.log("delete-job")}
+              onClick={() => dispatch(deleteJob(_id))}
             >
               delete
             </button>
