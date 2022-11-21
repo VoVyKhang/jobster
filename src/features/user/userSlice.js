@@ -21,14 +21,22 @@ const initialState = {
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (user, thunkAPI) => {
-    return registerUserThunk("/auth/register", user, thunkAPI);
+    return registerUserThunk(
+      "https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/register",
+      user,
+      thunkAPI
+    );
   }
 );
 
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (user, thunkAPI) => {
-    return loginUserThunk("/auth/login", user, thunkAPI);
+    return loginUserThunk(
+      "https://jobify-prod.herokuapp.com/api/v1/toolkit/auth/login",
+      user,
+      thunkAPI
+    );
   }
 );
 

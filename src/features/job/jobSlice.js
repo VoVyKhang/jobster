@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import axiosClient from "../../services/api/axiosClient";
 import { getUserFromLocalStorage } from "../../utils/localStorage";
-import { logoutUser } from "../../features/user/userSlice";
 import axios from "axios";
+
+import { logoutUser } from "../../features/user/userSlice";
+import { showLoading, hideLoading } from "../allJobs/allJobsSlice";
 
 const initialState = {
   isLoading: false,
@@ -19,11 +20,11 @@ const initialState = {
 };
 
 export const createJob = createAsyncThunk(
-  "job/createdJob",
+  "job/createJob",
   async (job, thunkAPI) => {
     try {
       const resp = await axios.post(
-        "https://jobify-prod.herokuapp.com/api/v1/toolkit/job",
+        "https://jobify-prod.herokuapp.com/api/v1/toolkit/jobs",
         job,
         {
           headers: {

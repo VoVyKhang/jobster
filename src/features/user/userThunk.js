@@ -1,9 +1,10 @@
+import axios from "axios";
 import axiosClient from "../../services/api/axiosClient";
 import { logoutUser } from "./userSlice";
 
 export const registerUserThunk = async (url, user, thunkAPI) => {
   try {
-    const resp = await axiosClient.post(url, user);
+    const resp = await axios.post(url, user);
     return resp.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data.msg);
@@ -12,7 +13,7 @@ export const registerUserThunk = async (url, user, thunkAPI) => {
 
 export const loginUserThunk = async (url, user, thunkAPI) => {
   try {
-    const resp = await axiosClient.post(url, user);
+    const resp = await axios.post(url, user);
     return resp.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data.msg);
