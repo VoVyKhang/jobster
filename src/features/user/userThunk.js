@@ -1,6 +1,10 @@
 import axios from "axios";
-import axiosClient from "../../services/api/axiosClient";
+import axiosClient, {
+  checkForUnauthorizedResponse,
+} from "../../services/api/axiosClient";
 import { logoutUser } from "./userSlice";
+import { clearAllJobsState } from "../allJobs/allJobsSlice";
+import { clearValues } from "../job/jobSlice";
 
 export const registerUserThunk = async (url, user, thunkAPI) => {
   try {
@@ -25,10 +29,17 @@ export const updateUserThunk = async (url, user, thunkAPI) => {
     const resp = await axiosClient.patch(url, user);
     return resp.data;
   } catch (error) {
-    if (error.response.status === 401) {
-      thunkAPI.dispatch(logoutUser());
-      return thunkAPI.rejectWithValue("Unauthorized! Logging Out...");
-    }
-    return thunkAPI.rejectWithValue(error.response.data.msg);
+    return checkForUnauthorizedResponse(error, thunkAPI);
+  }
+};
+
+export const clearStoreThunk = async (message, thunkAPI) => {
+  try {
+    thunkAPI.dispatch(logoutUser(message));
+    thunkAPI.dispatch(clearAllJobsState());
+    thunkAPI.dispatch(clearValues());
+    return Promise.resolve();
+  } catch (error) {
+    return Promise.reject();
   }
 };
